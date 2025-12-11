@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dynamic Image Gallery (Single-Origin)</title>
+    <style>
+        .gallery {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            padding: 20px;
+        }
+        .gallery img {
+            max-width: 250px;
+            height: auto;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Image Gallery from Local Server</h1>
+    <div id="image-container" class="gallery">
+        <p>Loading images...</p>
+    </div>
+
+    <script>
+        // Use relative paths since both are served from the same origin (e.g., http://<host>:<port>)
+        const API_URL = '/API/list-images'; 
+        const IMAGE_BASE_PATH = '/images/'; 
+        
+        const container = document.getElementById('image-container');
+
+        fetch(API_URL) 
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}.`);
+                }
+                return response.json();
+            })
+            .then(imageNames => {
+                container.innerHTML = ''; 
+                if (imageNames && imageNames.length > 0) {
+                    imageNames.forEach(name => {
+                        const img = document.createElement('img');
+                        // img.src uses the path handled by the @app.route('/images/<path:filename>') endpoint
+                        img.src = IMAGE_BASE_PATH + name; 
+                        img.alt = 'Gallery Image: ' + name;
+                        img.loading = 'lazy'; 
+
+                        container.appendChild(img);
+                    });
+                } else {
+                    container.innerHTML = '<p>No images found in the directory.</p>';
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching image list:', error);
+                container.innerHTML = `<p style="color: red;">Error loading gallery: ${error.message}. Verify the server is running and routing correctly.</p>`;
+            });
+    </script>
+
+</body>
+</html>
