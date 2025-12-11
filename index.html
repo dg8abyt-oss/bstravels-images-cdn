@@ -2,40 +2,30 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Dynamic Image Gallery (Single-Origin)</title>
+    <title>Baldeep Singh Travels Image Content Delivery Network and Gallery/title>
     <style>
-        .gallery {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            padding: 20px;
-        }
-        .gallery img {
-            max-width: 250px;
-            height: auto;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        }
+        .gallery { display: flex; flex-wrap: wrap; gap: 15px; padding: 20px; }
+        .gallery img { max-width: 250px; height: auto; border: 1px solid #ddd; border-radius: 4px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
     </style>
 </head>
 <body>
 
-    <h1>Image Gallery from Local Server</h1>
+    <h1>BSTravels Image Content Delivery Network and Gallery</h1>
     <div id="image-container" class="gallery">
         <p>Loading images...</p>
     </div>
 
     <script>
-        // Use relative paths since both are served from the same origin (e.g., http://<host>:<port>)
+        // Use relative paths. The browser will automatically prepend the Vercel domain.
         const API_URL = '/API/list-images'; 
-        const IMAGE_BASE_PATH = '/images/'; 
-        
+        const IMAGE_BASE_PATH = '/images/'; // Images are now served statically from /public/images
+
         const container = document.getElementById('image-container');
 
         fetch(API_URL) 
             .then(response => {
                 if (!response.ok) {
+                    // Check for HTTP errors
                     throw new Error(`HTTP error! Status: ${response.status}.`);
                 }
                 return response.json();
@@ -45,7 +35,7 @@
                 if (imageNames && imageNames.length > 0) {
                     imageNames.forEach(name => {
                         const img = document.createElement('img');
-                        // img.src uses the path handled by the @app.route('/images/<path:filename>') endpoint
+                        // Vercel serves /public/images/file.jpg directly via /images/file.jpg
                         img.src = IMAGE_BASE_PATH + name; 
                         img.alt = 'Gallery Image: ' + name;
                         img.loading = 'lazy'; 
@@ -58,7 +48,7 @@
             })
             .catch(error => {
                 console.error('Error fetching image list:', error);
-                container.innerHTML = `<p style="color: red;">Error loading gallery: ${error.message}. Verify the server is running and routing correctly.</p>`;
+                container.innerHTML = `<p style="color: red;">Error loading gallery: ${error.message}. Verify the Vercel Serverless Function deployment.</p>`;
             });
     </script>
 
